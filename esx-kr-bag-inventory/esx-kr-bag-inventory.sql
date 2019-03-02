@@ -5,7 +5,6 @@
   `y` double NOT NULL,
   `z` double NOT NULL
 	 
-PRIMARY KEY (`identifier`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `owned_bag_inventory` (
