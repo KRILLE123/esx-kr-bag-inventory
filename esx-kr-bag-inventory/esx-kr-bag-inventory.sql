@@ -4,6 +4,8 @@
   `x` double NOT NULL,
   `y` double NOT NULL,
   `z` double NOT NULL
+	 
+PRIMARY KEY (`identifier`)
 );
 
 CREATE TABLE IF NOT EXISTS `owned_bag_inventory` (
