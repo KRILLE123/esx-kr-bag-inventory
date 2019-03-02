@@ -17,10 +17,6 @@ _- All dropped bags respawn after restarting the server_
 
 _- The script was made to promote roleplaying_
 
-**Download**
-
-Download the script 
-
 **Installation**
 
 1. Download the files and insert them into your resource folder.
