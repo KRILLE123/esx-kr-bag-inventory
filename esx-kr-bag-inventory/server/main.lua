@@ -123,6 +123,7 @@ AddEventHandler('esx-kr-bag:PutItem', function(id, item, label, count, type)
 			end
 		end)
     end
+end)
 RegisterServerEvent('esx-kr-bag:PickUpBag')
 AddEventHandler('esx-kr-bag:PickUpBag', function(id)
     local src = source
