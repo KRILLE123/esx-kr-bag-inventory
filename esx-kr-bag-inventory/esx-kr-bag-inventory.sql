@@ -1,9 +1,9 @@
 ﻿CREATE TABLE IF NOT EXISTS `owned_bags` (
-  `identifier` varchar(50) DEFAULT NULL,
-  `id` int(11) DEFAULT NULL,
-  `x` double DEFAULT NULL,
-  `y` double DEFAULT NULL,
-  `z` double DEFAULT NULL
+  `identifier` varchar(50) NOT NULL,
+  `id` int(11) DEFAULT NOT NULL,
+  `x` double DEFAULT NOT NULL,
+  `y` double DEFAULT NOT NULL,
+  `z` double DEFAULT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `owned_bag_inventory` (
