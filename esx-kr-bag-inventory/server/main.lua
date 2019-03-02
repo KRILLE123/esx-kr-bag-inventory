@@ -95,15 +95,34 @@ RegisterServerEvent('esx-kr-bag:PutItem')
 AddEventHandler('esx-kr-bag:PutItem', function(id, item, label, count, type)
     local src = source
     local xPlayer = ESX.GetPlayerFromId(src)
+	local update
+	local insert
 
     if type == 'weapon' then
         xPlayer.removeWeapon(item, count)
     elseif type == 'item' then
         xPlayer.removeInventoryItem(item, count)
     end
-    MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
+	MySQL.Async.fetchAll('SELECT * FROM owned_bag_inventory WHERE id = @id ',{["@id"] = id}, function(result)
+		if result[1] ~= nil then
+			for i=1, #result, 1 do
+				if result[i].item == item then
+					count = count + result[i].count
+					update = 1
+				elseif result[i].item ~= item then
+					insert = 1
+				end
+			end
+			if update == 1 then
+				MySQL.Async.execute('UPDATE owned_bag_inventory SET count = @count WHERE item = @item', {['@item'] = item, ['@count'] = count})
+			elseif insert == 1 then
+				MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
+			end
+		else
+			MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
+		end
+    end)
 end)
-
 RegisterServerEvent('esx-kr-bag:PickUpBag')
 AddEventHandler('esx-kr-bag:PickUpBag', function(id)
     local src = source
