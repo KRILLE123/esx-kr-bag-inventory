@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS `owned_bag_inventory` (
 );
 
 INSERT INTO `items` (`name`, `label`, `limit`) VALUES
-	('bag', 'Bag', 1);
+	('bag', 'Bag', 1)
 ;
