@@ -24,10 +24,10 @@ _- The script was made to promote roleplaying_
 3. Insert the sql to your database.
 4. If you want the bag in your shop you'll have to insert this row
 
-> INSERT INTO `shops` (store, item, price) VALUES
+```INSERT INTO `shops` (store, item, price) VALUES
 	('TwentyFourSeven','bag',1000),
 	('RobsLiquor','bag',1000),
-	('LTDgasoline','bag',1000);
+	('LTDgasoline','bag',1000);```
 
 **Video**
 
