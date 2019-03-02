@@ -1,11 +1,10 @@
-﻿CREATE TABLE IF NOT EXISTS `owned_bags` (
-  `identifier` varchar(50) NOT NULL,
-  `id` int(11) NOT NULL,
-  `x` double NOT NULL,
-  `y` double NOT NULL,
-  `z` double NOT NULL
-	 
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `owned_bags`(
+`identifier` VARCHAR(50) NULL DEFAULT NULL, 
+`id` INT(11) NULL DEFAULT NULL, 
+`x` DOUBLE NULL DEFAULT NULL, 
+`y` DOUBLE NULL DEFAULT NULL, 
+`z` DOUBLE NULL DEFAULT NULL 
+) COLLATE='latin1_swedish_ci' ENGINE=InnoDB ;
 
 CREATE TABLE IF NOT EXISTS `owned_bag_inventory` (
   `id` int(11) DEFAULT NULL,
