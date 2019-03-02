@@ -2,6 +2,7 @@
 > **ESX-KR-BAG-INVENTORY**
 
 **Features**
+
 _- Synced with all players_
 
 _- You have the ability to put weapons and items in your bag_
@@ -13,9 +14,11 @@ _- All bags and it's items are saved in a database_
 _- All dropped bags respawn after restarting the server_
 
 **Usage**
+
 _- The script was made to promote roleplaying_
 
 **Download**
+
 Download the script 
 
 **Installation**
@@ -31,4 +34,5 @@ Download the script
 	('LTDgasoline','bag',1000);
 
 **Video**
+
 https://streamable.com/a4y2o
