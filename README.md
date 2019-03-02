@@ -1,0 +1,1 @@
+# esx-kr-bag-inventory
