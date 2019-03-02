@@ -17,6 +17,9 @@ _- All dropped bags respawn after restarting the server_
 
 _- The script was made to promote roleplaying_
 
+_- The default key to open the bag is F5_
+
+
 **Installation**
 
 1. Download the files and insert them into your resource folder.
