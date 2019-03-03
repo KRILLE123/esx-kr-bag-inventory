@@ -41,7 +41,6 @@ end)
 
 ESX.RegisterServerCallback('esx-kr-bag:getAllBags', function(source, cb)
     local src = source
-    local identifier = ESX.GetPlayerFromId(src).identifier
 
     MySQL.Async.fetchAll('SELECT * FROM owned_bags', {}, function(bags)
        
