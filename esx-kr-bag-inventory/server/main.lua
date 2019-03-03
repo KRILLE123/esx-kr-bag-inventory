@@ -135,6 +135,7 @@ AddEventHandler('esx-kr-bag:PickUpBag', function(id)
 
      for i=1, #xPlayers, 1 do
         TriggerClientEvent('esx-kr-bag:SetOntoPlayer', src, id)
+	TriggerClientEvent('esx:showNotification', src, 'Press ~b~[F5]~w~ to access your bag.')
         TriggerClientEvent('esx-kr-bag:ReSync', xPlayers[i], id)
      end
 end)
