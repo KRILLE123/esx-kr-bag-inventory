@@ -82,23 +82,34 @@ AddEventHandler('esx-kr-bag:TakeItem', function(id, item, count, type)
     local identifier = ESX.GetPlayerFromId(src).identifier
     local xPlayer = ESX.GetPlayerFromId(src)
 
+    MySQL.Async.fetchAll('SELECT * FROM owned_bags WHERE identifier = @identifier ',{["@identifier"] = identifier}, function(bag)
+
     if type == 'weapon' then
         xPlayer.addWeapon(item, count)
     elseif type == 'item' then
         xPlayer.addInventoryItem(item, count)
     end
+
+    MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount - 1})    
     MySQL.Async.execute('DELETE FROM owned_bag_inventory WHERE id = @id AND item = @item AND count = @count',{['@id'] = id,['@item'] = item, ['@count'] = count})
+    end)
 end)
 
 RegisterServerEvent('esx-kr-bag:PutItem')
 AddEventHandler('esx-kr-bag:PutItem', function(id, item, label, count, type)
     local src = source
     local xPlayer = ESX.GetPlayerFromId(src)
+    local identifier = ESX.GetPlayerFromId(src).identifier
 	local update
-	local insert
+    local insert
+    
+    MySQL.Async.fetchAll('SELECT * FROM owned_bags WHERE identifier = @identifier ',{["@identifier"] = identifier}, function(bag)
+
+    if bag[1].itemcount < Config.MaxItemCount then
 
     if type == 'weapon' then
         xPlayer.removeWeapon(item, count)
+        MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount + 1})
 		MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
     elseif type == 'item' then
         xPlayer.removeInventoryItem(item, count)
@@ -112,16 +123,22 @@ AddEventHandler('esx-kr-bag:PutItem', function(id, item, label, count, type)
 						insert = 1
 					end
 				end
-				if update == 1 then
-					MySQL.Async.execute('UPDATE owned_bag_inventory SET count = @count WHERE item = @item', {['@item'] = item, ['@count'] = count})
-				elseif insert == 1 then
-					MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
-				end
-			else
-				MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
-			end
-		end)
-    end
+                    if update == 1 then
+                        MySQL.Async.execute('UPDATE owned_bag_inventory SET count = @count WHERE item = @item', {['@item'] = item, ['@count'] = count})
+                    elseif insert == 1 then
+                        MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount + 1})
+                        MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
+                    end
+                    else
+                        MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount + 1})
+                        MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
+			        end
+		        end)
+            end
+        else
+            TriggerClientEvent('esx:showNotification', src, '~r~You can only have ' .. Config.MaxItemCount .. ' different items in your bag')
+        end
+    end)
 end)
 RegisterServerEvent('esx-kr-bag:PickUpBag')
 AddEventHandler('esx-kr-bag:PickUpBag', function(id)
