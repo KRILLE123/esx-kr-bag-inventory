@@ -83,15 +83,19 @@ AddEventHandler('esx-kr-bag:TakeItem', function(id, item, count, type)
     local xPlayer = ESX.GetPlayerFromId(src)
 
     MySQL.Async.fetchAll('SELECT * FROM owned_bags WHERE identifier = @identifier ',{["@identifier"] = identifier}, function(bag)
+    MySQL.Async.fetchAll('SELECT * FROM owned_bag_inventory WHERE id = @id AND item = @item AND count = @count',{["@id"] = id, ["@item"] = item, ["@count"] = count}, function(result)
 
-    if type == 'weapon' then
-        xPlayer.addWeapon(item, count)
-    elseif type == 'item' then
-        xPlayer.addInventoryItem(item, count)
-    end
+    if result[1] ~= nil then
 
-    MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount - 1})    
-    MySQL.Async.execute('DELETE FROM owned_bag_inventory WHERE id = @id AND item = @item AND count = @count',{['@id'] = id,['@item'] = item, ['@count'] = count})
+        if type == 'weapon' then
+            xPlayer.addWeapon(item, count)
+        elseif type == 'item' then
+            xPlayer.addInventoryItem(item, count)
+        end
+                MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount - 1})    
+                MySQL.Async.execute('DELETE FROM owned_bag_inventory WHERE id = @id AND item = @item AND count = @count',{['@id'] = id,['@item'] = item, ['@count'] = count})
+            end
+        end)
     end)
 end)
 
