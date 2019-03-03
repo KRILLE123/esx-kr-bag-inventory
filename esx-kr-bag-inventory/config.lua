@@ -1,3 +1,3 @@
 Config                            = {}
 
-Config.MaxItemCount = 7 -- MAX DIFFERENT ITEM COUNT
+Config.MaxItemCount = 5 -- MAX DIFFERENT ITEM COUNT
