@@ -83,7 +83,7 @@ AddEventHandler('esx-kr-bag:TakeItem', function(id, item, count, type)
     local xPlayer = ESX.GetPlayerFromId(src)
 
     MySQL.Async.fetchAll('SELECT * FROM owned_bags WHERE id = @id ',{["@id"] = id}, function(bag)
-    MySQL.Async.fetchAll('SELECT * FROM owned_bag_inventory WHERE id = @id AND item = @item AND count = @count',{["@id"] = id, ["@item"] = item, ["@count"] = count}, function(result)
+    MySQL.Async.fetchAll('SELECT * FROM owned_bag_inventory WHERE id = @id AND item = @item ',{["@id"] = id, ["@item"] = item}, function(result)
 
     if result[1] ~= nil then
 
