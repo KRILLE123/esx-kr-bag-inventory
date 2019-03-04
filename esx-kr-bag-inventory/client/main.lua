@@ -45,34 +45,9 @@ function Draw3DText(x, y, z, text)
     end
 end
 
- RegisterNetEvent('esx:playerLoaded')
- AddEventHandler('esx:playerLoaded', function(xPlayer)
-   PlayerData = xPlayer
- end)
-
- AddEventHandler('playerSpawned', function(spawn)
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(xPlayer)
     Citizen.Wait(200)
-
-    ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
-        if bags ~= nil then
-            for i=1, #bags, 1 do
-                TriggerEvent('esx-kr-bag:SpawnBagIntoClient', bags[i].x, bags[i].y, bags[i].z)
-                TriggerEvent('esx-kr-bag:insertIntoClient', bags[i].id)
-            end
-        end
-
-        ESX.TriggerServerCallback('esx-kr-bag:getBag', function(bag)
-            if bag ~= nil then
-                BagId = bag.bag[1].id
-                HasBag = true
-                TriggerEvent('esx-kr-bag:SetOntoPlayer')
-		    end
-        end)
-    end)
-end)
-
-Citizen.CreateThread(function()
-	Citizen.Wait(200)
 
     ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
         if bags ~= nil then
@@ -330,8 +305,8 @@ Citizen.CreateThread(function()
                 if GetDistanceBetweenCoords(playercoords, Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z, true) <= 1.5 and not HasBag then
 
                     wait = 5
-                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.45, '~g~[E]~w~ to Pick up the bag')
-                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.35, '~o~[N]~w~ to Search the bag')
+                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.45, '~g~[E]~w~ to pick up the bag')
+                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.35, '~o~[N]~w~ to Search bag')
              
                         if IsControlJustReleased(0, Keys['E']) then
                             HasBag = true
