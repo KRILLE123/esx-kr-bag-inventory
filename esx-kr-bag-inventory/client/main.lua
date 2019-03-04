@@ -9,16 +9,42 @@ local Keys = {
 	["LEFT"] = 174, ["RIGHT"] = 175, ["TOP"] = 27, ["DOWN"] = 173,
 	["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
 }
+
 ESX 			    			= nil
+
 local HasBag = false
 local Bags = {}
 local BagId = false
 
 Citizen.CreateThread(function()
 	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+        TriggerEvent('esx:getSharedObject', function(obj) 
+            ESX = obj 
+        end)
+
 		Citizen.Wait(0)
-	end
+    end
+    
+    -- On restart check down below.
+
+    if ESX.IsPlayerLoaded() then
+        ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
+            if bags ~= nil then
+                for i=1, #bags, 1 do
+                    TriggerEvent('esx-kr-bag:SpawnBagIntoClient', bags[i].x, bags[i].y, bags[i].z)
+                    TriggerEvent('esx-kr-bag:insertIntoClient', bags[i].id)
+                end
+            end
+
+            ESX.TriggerServerCallback('esx-kr-bag:getBag', function(bag)
+                if bag ~= nil then
+                    BagId = bag.bag[1].id
+                    HasBag = true
+                    TriggerEvent('esx-kr-bag:SetOntoPlayer')
+                end
+            end)
+        end)
+    end
 end)
 
 function Draw3DText(x, y, z, text)
@@ -32,7 +58,6 @@ function Draw3DText(x, y, z, text)
         SetTextScale(scale, scale)
         SetTextFont(0)
         SetTextProportional(1)
-        -- SetTextScale(0.0, 0.55)
         SetTextColour(255, 255, 255, 255)
         SetTextDropshadow(1, 1, 0, 0, 255)
         SetTextEdge(0, 0, 0, 0, 150)
@@ -45,13 +70,9 @@ function Draw3DText(x, y, z, text)
     end
 end
 
- RegisterNetEvent('esx:playerLoaded')
- AddEventHandler('esx:playerLoaded', function(xPlayer)
-   PlayerData = xPlayer
- end)
-
- AddEventHandler('playerSpawned', function(spawn)
-    Citizen.Wait(200)
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(xPlayer)
+    PlayerData = xPlayer
 
     ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
         if bags ~= nil then
@@ -66,28 +87,7 @@ end
                 BagId = bag.bag[1].id
                 HasBag = true
                 TriggerEvent('esx-kr-bag:SetOntoPlayer')
-		    end
-        end)
-    end)
-end)
-
-Citizen.CreateThread(function()
-	Citizen.Wait(200)
-
-    ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
-        if bags ~= nil then
-            for i=1, #bags, 1 do
-                TriggerEvent('esx-kr-bag:SpawnBagIntoClient', bags[i].x, bags[i].y, bags[i].z)
-                TriggerEvent('esx-kr-bag:insertIntoClient', bags[i].id)
             end
-        end
-
-        ESX.TriggerServerCallback('esx-kr-bag:getBag', function(bag)
-            if bag ~= nil then
-                BagId = bag.bag[1].id
-                HasBag = true
-                TriggerEvent('esx-kr-bag:SetOntoPlayer')
-		    end
         end)
     end)
 end)
@@ -95,14 +95,13 @@ end)
 RegisterNetEvent('esx-kr-bag:SetOntoPlayer')
 AddEventHandler('esx-kr-bag:SetOntoPlayer', function(id)
     ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
-
-            if HasBag and skin.bags_1 ~= 45 then
-                TriggerEvent('skinchanger:change', "bags_1", 45)
-                TriggerEvent('skinchanger:change', "bags_2", 0)
-                TriggerEvent('skinchanger:getSkin', function(skin)
-                TriggerServerEvent('esx_skin:save', skin)
-                end)
-            end
+        if HasBag and skin.bags_1 ~= 45 then
+            TriggerEvent('skinchanger:change', "bags_1", 45)
+            TriggerEvent('skinchanger:change', "bags_2", 0)
+            TriggerEvent('skinchanger:getSkin', function(skin)
+            TriggerServerEvent('esx_skin:save', skin)
+            end)
+        end
     end)
 end)
 
@@ -126,11 +125,11 @@ end)
 RegisterNetEvent('esx-kr-bag:ReSync')
 AddEventHandler('esx-kr-bag:ReSync', function(id)
     Bags = {}
+
     ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
         for i=1, #bags, 1 do
             table.insert(Bags, {id = {coords = {x = bags[i].x, y = bags[i].y, z = bags[i].z}, id = bags[i].id}})
         end
-
     end)
 end)
 
@@ -139,11 +138,11 @@ function Bag()
 
     local elements = {}
 
-        table.insert(elements, {label = 'Put object', value = 'put'})
-        table.insert(elements, {label = 'Take object', value = 'take'})
-        table.insert(elements, {label = 'Drop bag', value = 'drop'})
+    table.insert(elements, {label = 'Put object', value = 'put'})
+    table.insert(elements, {label = 'Take object', value = 'take'})
+    table.insert(elements, {label = 'Drop bag', value = 'drop'})
         
-        ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'lel',
+    ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'lel',
         {
             title    = 'Bag',
             align    = 'left',
@@ -191,12 +190,11 @@ AddEventHandler('esx-kr-bag:SpawnBagIntoClient', function(x, y ,z)
         z = z
     }
 
-        ESX.Game.SpawnObject(1626933972, coords3, function(bag)
-        -- ESX.Game.SpawnObject(1626933972, coords3, function(bag)
+    ESX.Game.SpawnObject(1626933972, coords3, function(bag)
         FreezeEntityPosition(bag, true)
         SetEntityAsMissionEntity(object, true, false)
         SetEntityCollision(bag, false, true)
-        end)
+    end)
 end)
 
 function DropBag()
@@ -207,17 +205,17 @@ function DropBag()
         local headingvector = GetEntityForwardVector(PlayerPedId())
         local x, y, z = table.unpack(coords1 + headingvector * 1.0)
 
-            local coords2 = {
-                x = x,
-                y = y,
-                z = z - 1
-            }
+        local coords2 = {
+            x = x,
+            y = y,
+            z = z - 1
+        }
 
-            z2 = z - 1
+        z2 = z - 1
 
-            TriggerServerEvent('esx-kr-bag:DropBag', BagId, x, y, z2)
+        TriggerServerEvent('esx-kr-bag:DropBag', BagId, x, y, z2)
 
-            ESX.Game.SpawnObject(1626933972, coords2, function(bag)
+        ESX.Game.SpawnObject(1626933972, coords2, function(bag)
             FreezeEntityPosition(bag, true)
             SetEntityCollision(bag, false, true)
             TriggerEvent('skinchanger:change', "bags_1", 0)
@@ -323,34 +321,36 @@ Citizen.CreateThread(function()
 
         local wait = 500
 
-            for i=1, #Bags, 1 do
+        for i=1, #Bags, 1 do
 
-                local playercoords = GetEntityCoords(PlayerPedId())
+            local playercoords = GetEntityCoords(PlayerPedId())
 
-                if GetDistanceBetweenCoords(playercoords, Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z, true) <= 1.5 and not HasBag then
+            if GetDistanceBetweenCoords(playercoords, Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z, true) <= 1.5 and not HasBag then
+                wait = 5
 
-                    wait = 5
-                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.45, '~g~[E]~w~ to Pick up the bag')
-                    Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.35, '~o~[N]~w~ to Search the bag')
-             
-                        if IsControlJustReleased(0, Keys['E']) then
-                            HasBag = true
-                            BagId = Bags[i].id.id
-                            local Bag = GetClosestObjectOfType(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z, 1.5, 1626933972, false, false, false)
-    
-                                NetworkFadeOutEntity(Bag, false, false)
-                                DeleteObject(Bag)
-                         
-                                TriggerServerEvent('esx-kr-bag:PickUpBag', Bags[i].id.id)
-                        end
-                    if IsControlJustReleased(0, Keys['N']) then
-                            HasBag = false
-                            BagId = Bags[i].id.id
-                            TakeItem()
+                Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.45, '~g~[E]~w~ to Pick up the bag')
+                Draw3DText(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z + 0.35, '~o~[N]~w~ to Search the bag')
+            
+                if IsControlJustReleased(0, Keys['E']) then
+                    HasBag = true
+                    BagId = Bags[i].id.id
 
-                        end
+                    local Bag = GetClosestObjectOfType(Bags[i].id.coords.x, Bags[i].id.coords.y, Bags[i].id.coords.z, 1.5, 1626933972, false, false, false)
+
+                    NetworkFadeOutEntity(Bag, false, false)
+                    DeleteObject(Bag)
+                
+                    TriggerServerEvent('esx-kr-bag:PickUpBag', Bags[i].id.id)
+                end
+
+                if IsControlJustReleased(0, Keys['N']) then
+                        HasBag = false
+                        BagId = Bags[i].id.id
+                        TakeItem()
                     end
                 end
+            end
+
             Citizen.Wait(wait)
         end
     end)
@@ -358,6 +358,7 @@ Citizen.CreateThread(function()
 Citizen.CreateThread(function()
     while true do
         Wait(5)
+
         if IsControlJustReleased(0, Keys['F5']) and HasBag and not IsPedInAnyVehicle(GetPlayerPed(-1), true) and not IsEntityInAir(PlayerPedId()) then -- Change F5 to the key you want to open the meny with
             Bag()
         end
