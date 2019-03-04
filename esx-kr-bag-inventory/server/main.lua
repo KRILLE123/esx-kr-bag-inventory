@@ -109,13 +109,13 @@ AddEventHandler('esx-kr-bag:PutItem', function(id, item, label, count, type)
     
     MySQL.Async.fetchAll('SELECT * FROM owned_bags WHERE identifier = @identifier ',{["@identifier"] = identifier}, function(bag)
 
-    if bag[1].itemcount < Config.MaxItemCount then
+    if bag[1].itemcount < Config.MaxDifferentItems then
 
     if type == 'weapon' then
         xPlayer.removeWeapon(item, count)
         MySQL.Async.execute('UPDATE owned_bags SET itemcount = @itemcount WHERE identifier = @identifier', {['@identifier'] = identifier, ['@itemcount'] = bag[1].itemcount + 1})
 		MySQL.Async.execute('INSERT INTO owned_bag_inventory (id, label, item, count) VALUES (@id, @label, @item, @count)', {['@id'] = id,['@item']  = item, ['@label']  = label, ['@count'] = count})
-    elseif type == 'item' then
+    elseif type == 'item' and count < Config.MaxItemCount then
         xPlayer.removeInventoryItem(item, count)
 		MySQL.Async.fetchAll('SELECT * FROM owned_bag_inventory WHERE id = @id ',{["@id"] = id}, function(result)
 			if result[1] ~= nil then
