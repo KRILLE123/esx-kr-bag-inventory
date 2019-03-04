@@ -48,6 +48,7 @@ end
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
     Citizen.Wait(200)
+    PlayerData = xPlayer
 
     ESX.TriggerServerCallback('esx-kr-bag:getAllBags', function(bags)
         if bags ~= nil then
